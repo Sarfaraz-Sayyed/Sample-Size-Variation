@@ -40,26 +40,27 @@ npergrp
 
 ## multiple post baseline time-point case
 rm_sample <- function(alpha = 0.025,
-                     power = 0.85,
-                     meandiff = c(0, 0.393, 0.785, 1.2, 1.57),
-                     contrast = c(-1, 0, 0, 0, 1),
-                     var = vcov_mat(
-                                  varvec = c(26.52, 26.52, 26.52, 26.52, 26.52),
-                                  rho = 0.5,
-                                  type = "AR1")
-                     )
-{  {
+                      power = 0.85,
+                      meandiff = c(0, 0.393, 0.785, 1.2, 1.57),
+                      contrast = c(-1, 0, 0, 0, 1),
+                      var = vcov_mat(
+                        varvec = c(26.52, 26.52, 26.52, 26.52, 26.52),
+                        rho = 0.5,
+                        type = "AR1"
+                      ))
+{
+  {
     contdiff <- t(contrast) %*% meandiff
     contvar <- t(contrast) %*% var %*% contrast
     npergrp_rm <- (2 * ((qnorm(1 - alpha) +
-                           qnorm(power))**2) * contvar) / (contdiff**2)
+      qnorm(power))**2) * contvar) / (contdiff**2)
   }
   return(round(npergrp_rm))
 }
 
 sample_size <- function(rho = seq(0, 1, by = 0.05),
-                        alpha = 0.025,             # 2 tailed  5% type I error
-                        power = 0.85,              # 85% power
+                        alpha = 0.025, # 2 tailed  5% type I error
+                        power = 0.85, # 85% power
                         meandiff = c(0, 0.5, 0.9, 0.9),
                         contrast = c(-1, 0, 0, 1),
                         var_mean = c(1, 9.43, 7.08, 12.95),
@@ -67,12 +68,12 @@ sample_size <- function(rho = seq(0, 1, by = 0.05),
   rm_dat <- matrix(nrow = 1, ncol = 2, byrow = TRUE)
 
   for (i in rho) {
-  rm <- rm_sample(
-                    alpha = alpha,
-                    power = power,
-                    meandiff = meandiff,
-                    contrast = contrast,
-                    var = vcov_mat(varvec = var_mean, rho = i, type = type)
+    rm <- rm_sample(
+      alpha = alpha,
+      power = power,
+      meandiff = meandiff,
+      contrast = contrast,
+      var = vcov_mat(varvec = var_mean, rho = i, type = type)
     )
     rm_dat <- rbind(rm_dat, c(i, rm))
   }
@@ -99,7 +100,7 @@ run4cas <- function(ntime = 3,
     rho = seq(0, 1, by = 0.05),
     meandiff = meanvector,
     contrast = c(-1, replicate(ntime - 2, 0), 1),
-    VAR = varcovar,
+    var_mean = varcovar,
     type = "AR1"
   ))
 
@@ -107,7 +108,7 @@ run4cas <- function(ntime = 3,
     rho = seq(0, 1, by = 0.05),
     meandiff = meanvector,
     contrast = c(-1, replicate(ntime - 1, (1 / (ntime - 1)))),
-    VAR = varcovar,
+    var_mean = varcovar,
     type = "AR1"
   ))
 
@@ -115,7 +116,7 @@ run4cas <- function(ntime = 3,
     rho = seq(0, 1, by = 0.05),
     meandiff = meanvector,
     contrast = c(-1, replicate(ntime - 2, 0), 1),
-    VAR = varcovar,
+    var_mean = varcovar,
     type = "CS"
   ))
 
@@ -123,7 +124,7 @@ run4cas <- function(ntime = 3,
     rho = seq(0, 1, by = 0.05),
     meandiff = meanvector,
     contrast = c(-1, replicate(ntime - 1, (1 / (ntime - 1)))),
-    VAR = varcovar,
+    var_mean = varcovar,
     type = "CS"
   ))
   return(list(sample1, sample2, sample3, sample4))
@@ -216,10 +217,12 @@ ggplot(data = na.omit(combined[1:3]), aes(x = X1, y = X2, group = type)) +
       "red line represent the sample with univariate case"
     )
   ) +
-  geom_hline(yintercept = npergrp,
-             linetype = "solid",
-             color = "red",
-             size = 0.7) +
+  geom_hline(
+    yintercept = npergrp,
+    linetype = "solid",
+    color = "red",
+    size = 0.7
+  ) +
   theme(
     legend.title = element_blank(),
     legend.text = element_text(size = 7),
@@ -244,10 +247,12 @@ ggplot(data = na.omit(combined1[1:3]), aes(x = X1, y = X2, group = type)) +
       "red line represent the sample with univariate case"
     )
   ) +
-  geom_hline(yintercept = npergrp,
-             linetype = "solid",
-             color = "red",
-             size = 0.7) +
+  geom_hline(
+    yintercept = npergrp,
+    linetype = "solid",
+    color = "red",
+    size = 0.7
+  ) +
   theme(
     legend.title = element_blank(),
     legend.text = element_text(size = 7),
