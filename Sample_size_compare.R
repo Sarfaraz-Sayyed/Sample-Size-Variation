@@ -1,14 +1,14 @@
 ## Program for generating sample size for single time-point post-baseline vs
-## multiple time post baseline
+## Multiple time post-baseline
 
 library(ggplot2)
 
 ## Creating variance-covariance matrix for
 ## 1) compound symmetry and
 ## 2) Auto-regressive of order 1 AR(1)
-## sample call for 3x3(default) variance covariance matrix
+## sample call for 3x3(default) variance-covariance matrix
 ## for type CS with variance=1 and correlation=0.5 - vcov_mat()
-## sample call for 5x5 variance covariance matrix
+## sample call for 5x5 variance-covariance matrix
 ## for type AR1 - vcov_mat(varvec=c(25,25,25,25,25), rho=0.5, type="AR1")
 
 vcov_mat <- function(varvec = c(1, 1, 1), rho = 0.5, type = "CS") {
@@ -30,7 +30,7 @@ vcov_mat <- function(varvec = c(1, 1, 1), rho = 0.5, type = "CS") {
 }
 
 
-## single post baseline time-point case
+## Single post-baseline time-point case
 power <- 0.85
 alpha <- 0.05
 ## effect size = (mu1 - mu2)/sigma
@@ -38,7 +38,7 @@ effect_size <- (0.9) / sqrt(12.95)
 npergrp <- (2 * ((qnorm(1 - (alpha / 2)) + qnorm(power))**2)) / (effect_size)**2
 npergrp
 
-## multiple post baseline time-point case
+## Multiple post-baseline time-point case
 rm_sample <- function(alpha = 0.025,
                       power = 0.85,
                       meandiff = c(0, 0.393, 0.785, 1.2, 1.57),
@@ -97,7 +97,7 @@ run4cas <- function(ntime = 3,
                     meanvector = meandiff3,
                     varcovar = VAR3) {
   sample1 <- data.frame(sample_size(
-    rho = seq(0, 1, by = 0.05),
+    rho = seq(0.1, 0.95, by = 0.05),
     meandiff = meanvector,
     contrast = c(-1, replicate(ntime - 2, 0), 1),
     var_mean = varcovar,
@@ -105,7 +105,7 @@ run4cas <- function(ntime = 3,
   ))
 
   sample2 <- data.frame(sample_size(
-    rho = seq(0, 1, by = 0.05),
+    rho = seq(0.1, 0.95, by = 0.05),
     meandiff = meanvector,
     contrast = c(-1, replicate(ntime - 1, (1 / (ntime - 1)))),
     var_mean = varcovar,
@@ -113,7 +113,7 @@ run4cas <- function(ntime = 3,
   ))
 
   sample3 <- data.frame(sample_size(
-    rho = seq(0, 1, by = 0.05),
+    rho = seq(0.1, 0.95, by = 0.05),
     meandiff = meanvector,
     contrast = c(-1, replicate(ntime - 2, 0), 1),
     var_mean = varcovar,
@@ -121,7 +121,7 @@ run4cas <- function(ntime = 3,
   ))
 
   sample4 <- data.frame(sample_size(
-    rho = seq(0, 1, by = 0.05),
+    rho = seq(0.1, 0.95, by = 0.05),
     meandiff = meanvector,
     contrast = c(-1, replicate(ntime - 1, (1 / (ntime - 1)))),
     var_mean = varcovar,
@@ -199,18 +199,18 @@ combined1 <- rbind(
   cbind(data.frame(dataout10[4]), type = "CS_mean(10)")
 )
 
-# plotting the data for AR(1) related outputs
-ggplot(data = na.omit(combined[1:3]), aes(x = X1, y = X2, group = type)) +
+# plotting the data for CS related outputs
+ggplot(data = na.omit(combined1[1:3]), aes(x = X1, y = X2, group = type)) +
   scale_shape_manual(values = 1:12) +
   geom_point(aes(color = factor(type), shape = factor(type))) +
   geom_line() +
   scale_x_continuous(breaks = seq(0, 1, by = 0.1)) +
-  scale_y_continuous(breaks = seq(0, 1200, by = 200)) +
+  scale_y_continuous(breaks = seq(0, 1600, by = 200)) +
   labs(
     x = "Correlation(rho)",
     y = "Sample Size",
     title = "Relation between different contrast, correlation vs Sample size",
-    subtitle = "Decreasing correlation over time(Auto regressive of order 1)",
+    subtitle = "Constant correlation over time(Compound Symmetry)",
     caption = c(
       "Contrast: _diff -> last visit - baseline",
       "          _mean -> average effect of all post baseline visits",
@@ -229,18 +229,18 @@ ggplot(data = na.omit(combined[1:3]), aes(x = X1, y = X2, group = type)) +
     strip.text.x = element_blank()
   )
 
-# plotting the data for CS related outputs
-ggplot(data = na.omit(combined1[1:3]), aes(x = X1, y = X2, group = type)) +
+# plotting the data for AR(1) related outputs
+ggplot(data = na.omit(combined[1:3]), aes(x = X1, y = X2, group = type)) +
   scale_shape_manual(values = 1:12) +
   geom_point(aes(color = factor(type), shape = factor(type))) +
   geom_line() +
   scale_x_continuous(breaks = seq(0, 1, by = 0.1)) +
-  scale_y_continuous(breaks = seq(0, 1600, by = 200)) +
+  scale_y_continuous(breaks = seq(0, 1200, by = 200)) +
   labs(
     x = "Correlation(rho)",
     y = "Sample Size",
     title = "Relation between different contrast, correlation vs Sample size",
-    subtitle = "Constant correlation over time(Compound Symmetry)",
+    subtitle = "Decreasing correlation over time(Auto regressive of order 1)",
     caption = c(
       "Contrast: _diff -> last visit - baseline",
       "          _mean -> average effect of all post baseline visits",
