@@ -1,3 +1,4 @@
+
 ## Program for generating sample size for single time-point post-baseline vs
 ## Multiple time post-baseline
 
@@ -228,6 +229,7 @@ ggplot(data = na.omit(combined1[1:3]), aes(x = X1, y = X2, group = type)) +
     legend.text = element_text(size = 7),
     strip.text.x = element_blank()
   )
+
 
 # plotting the data for AR(1) related outputs
 ggplot(data = na.omit(combined[1:3]), aes(x = X1, y = X2, group = type)) +
